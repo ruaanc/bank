@@ -1,6 +1,7 @@
 import org.account.Account;
 import org.account.AccountService;
 import org.account.AccountType;
+import org.account.exceptions.InsufficientFundsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.user.User;
@@ -8,6 +9,7 @@ import org.user.User;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserTest {
 
@@ -16,6 +18,7 @@ class UserTest {
     private final BigDecimal DEFAULT_TOTAL = new BigDecimal("1000.00");
     private final Long DEFAULT_ACCOUNT_NUMBER = 1000L;
     private final Long DEFAULT_ID = 1L;
+    private final BigDecimal INSUFFICIENT_FUNDS = new BigDecimal("0.00");
 
     private AccountService accountService;
 
@@ -51,6 +54,19 @@ class UserTest {
         Account account = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL);
         User user = new User(DEFAULT_ID, USER_01, account);
         assertEquals(DEFAULT_TOTAL, this.accountService.checkBalance(user));
+    }
+
+    @Test
+    void shouldReturnInsufficientBalanceException() {
+        Account currentAccountToTransferUser = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT,
+                INSUFFICIENT_FUNDS);
+        User transferUser = new User(DEFAULT_ID, USER_01, currentAccountToTransferUser);
+
+        Account currentAccountToReceivingUser = new Account(1001L, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL);
+        User receivingUser = new User(2L, USER_02, currentAccountToReceivingUser);
+
+        assertThrows(InsufficientFundsException.class, () -> this.accountService.transfer(new BigDecimal("500.00"),
+                transferUser, receivingUser));
     }
 
 }
