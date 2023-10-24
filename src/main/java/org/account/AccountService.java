@@ -37,7 +37,6 @@ public class AccountService {
         return transferUserAccount.getTotal();
     }
 
-
     /*
     UserTest: shouldReturnUserBalance
     * @CheckExpect("checkBalance(new User(1L, "User01", new Account(1000L, AccountType.CURRENT_ACCOUNT,
@@ -45,6 +44,17 @@ public class AccountService {
     * */
     public BigDecimal checkBalance(User user) {
         return user.getAccount().getTotal();
+    }
+
+    /*
+    UserTest: shouldSuccessfullyDepositIntoUserAccount
+    * @CheckExpect("deposit(new User(1L, "User01", new Account(1000L, AccountType.CURRENT_ACCOUNT,
+        new BigDecimal("1000.00"))), new BigDecimal("500.00"))", "new BigDecimal("1500.00")")
+    * */
+    public BigDecimal deposit(User user, BigDecimal amount) {
+        Account account = user.getAccount();
+        account.setTotal(account.getTotal().add(amount));
+        return account.getTotal();
     }
 
 }

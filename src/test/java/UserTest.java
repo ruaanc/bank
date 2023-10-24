@@ -8,17 +8,17 @@ import org.user.User;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
 
     private final String USER_01 = "User01";
-    private String USER_02 = "User02";
+    private final String USER_02 = "User02";
     private final BigDecimal DEFAULT_TOTAL = new BigDecimal("1000.00");
     private final Long DEFAULT_ACCOUNT_NUMBER = 1000L;
     private final Long DEFAULT_ID = 1L;
     private final BigDecimal INSUFFICIENT_FUNDS = new BigDecimal("0.00");
+    private final BigDecimal STANDARD_ADDITION = new BigDecimal("500.00");
 
     private AccountService accountService;
 
@@ -44,9 +44,9 @@ class UserTest {
         Account currentAccountToReceivingUser = new Account(1001L, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL);
         User receivingUser = new User(2L, USER_02, currentAccountToReceivingUser);
 
-        BigDecimal currentTotalToTransferUser = this.accountService.transfer(new BigDecimal("500.00"), transferUser,
+        BigDecimal currentTotalToTransferUser = this.accountService.transfer(STANDARD_ADDITION, transferUser,
                 receivingUser);
-        assertEquals(currentTotalToTransferUser, new BigDecimal("500.00"));
+        assertEquals(currentTotalToTransferUser, STANDARD_ADDITION);
     }
 
     @Test
@@ -65,8 +65,20 @@ class UserTest {
         Account currentAccountToReceivingUser = new Account(1001L, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL);
         User receivingUser = new User(2L, USER_02, currentAccountToReceivingUser);
 
-        assertThrows(InsufficientFundsException.class, () -> this.accountService.transfer(new BigDecimal("500.00"),
+        assertThrows(InsufficientFundsException.class, () -> this.accountService.transfer(STANDARD_ADDITION,
                 transferUser, receivingUser));
+    }
+
+    @Test
+    void shouldSuccessfullyDepositIntoUserAccount() {
+        Account account = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT,
+                DEFAULT_TOTAL);
+        User user = new User(DEFAULT_ID, USER_01, account);
+
+        BigDecimal currentTotal = this.accountService.deposit(user, STANDARD_ADDITION);
+
+        assertEquals(currentTotal, new BigDecimal("1500.00"));
+
     }
 
 }
