@@ -2,13 +2,15 @@ import org.account.Account;
 import org.account.AccountService;
 import org.account.AccountType;
 import org.account.exceptions.InsufficientFundsException;
+import org.account.exceptions.NotDepositNegativeAmountException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.user.User;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserTest {
 
@@ -19,6 +21,7 @@ class UserTest {
     private final Long DEFAULT_ID = 1L;
     private final BigDecimal INSUFFICIENT_FUNDS = new BigDecimal("0.00");
     private final BigDecimal STANDARD_ADDITION = new BigDecimal("500.00");
+    private final BigDecimal STANDARD_ADDITION_NEGATIVE = new BigDecimal("-500.00");
 
     private AccountService accountService;
 
@@ -78,6 +81,17 @@ class UserTest {
         BigDecimal currentTotal = this.accountService.deposit(user, STANDARD_ADDITION);
 
         assertEquals(currentTotal, new BigDecimal("1500.00"));
+
+    }
+
+    @Test
+    void shouldReturnErrorWhenDepositingNegativeAmount() {
+        Account account = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT,
+                DEFAULT_TOTAL);
+        User user = new User(DEFAULT_ID, USER_01, account);
+
+        assertThrows(NotDepositNegativeAmountException.class, () -> this.accountService.deposit(user,
+                STANDARD_ADDITION_NEGATIVE));
 
     }
 
