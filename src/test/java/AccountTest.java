@@ -1,6 +1,7 @@
 import org.account.Account;
 import org.account.AccountService;
 import org.account.AccountType;
+import org.account.exceptions.BlockedAccountException;
 import org.account.exceptions.InsufficientFundsException;
 import org.account.exceptions.NotDepositNegativeAmountException;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class UserTest {
+class AccountTest {
 
     private final String USER_01 = "User01";
     private final String USER_02 = "User02";
@@ -33,7 +34,8 @@ class UserTest {
 
     @Test
     void shouldInstantiateUser() {
-        Account currentAccount = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL);
+        Account currentAccount = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL,
+                false);
         User user01 = new User(DEFAULT_ID, USER_01, currentAccount);
         assertEquals(user01.getName(), USER_01);
     }
@@ -41,10 +43,11 @@ class UserTest {
     @Test
     void shouldTransferMoneyBetweenUsers() {
         Account currentAccountToTransferUser = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT,
-                DEFAULT_TOTAL);
+                DEFAULT_TOTAL, false);
         User transferUser = new User(DEFAULT_ID, USER_01, currentAccountToTransferUser);
 
-        Account currentAccountToReceivingUser = new Account(1001L, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL);
+        Account currentAccountToReceivingUser = new Account(1001L, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL,
+                false);
         User receivingUser = new User(2L, USER_02, currentAccountToReceivingUser);
 
         BigDecimal currentTotalToTransferUser = this.accountService.transfer(STANDARD_ADDITION, transferUser,
@@ -54,7 +57,7 @@ class UserTest {
 
     @Test
     void shouldReturnUserBalance() {
-        Account account = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL);
+        Account account = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL, false);
         User user = new User(DEFAULT_ID, USER_01, account);
         assertEquals(DEFAULT_TOTAL, this.accountService.checkBalance(user));
     }
@@ -62,10 +65,11 @@ class UserTest {
     @Test
     void shouldReturnInsufficientBalanceException() {
         Account currentAccountToTransferUser = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT,
-                INSUFFICIENT_FUNDS);
+                INSUFFICIENT_FUNDS, false);
         User transferUser = new User(DEFAULT_ID, USER_01, currentAccountToTransferUser);
 
-        Account currentAccountToReceivingUser = new Account(1001L, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL);
+        Account currentAccountToReceivingUser = new Account(1001L, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL,
+                false);
         User receivingUser = new User(2L, USER_02, currentAccountToReceivingUser);
 
         assertThrows(InsufficientFundsException.class, () -> this.accountService.transfer(STANDARD_ADDITION,
@@ -75,7 +79,7 @@ class UserTest {
     @Test
     void shouldSuccessfullyDepositIntoUserAccount() {
         Account account = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT,
-                DEFAULT_TOTAL);
+                DEFAULT_TOTAL, false);
         User user = new User(DEFAULT_ID, USER_01, account);
 
         BigDecimal currentTotal = this.accountService.deposit(user, STANDARD_ADDITION);
@@ -87,12 +91,26 @@ class UserTest {
     @Test
     void shouldReturnErrorWhenDepositingNegativeAmount() {
         Account account = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT,
-                DEFAULT_TOTAL);
+                DEFAULT_TOTAL, false);
         User user = new User(DEFAULT_ID, USER_01, account);
 
         assertThrows(NotDepositNegativeAmountException.class, () -> this.accountService.deposit(user,
                 STANDARD_ADDITION_NEGATIVE));
 
+    }
+
+    @Test
+    void shouldReturnExceptionTryingTransferFromBlockedAccount() {
+        Account currentAccountToTransferUser = new Account(DEFAULT_ACCOUNT_NUMBER, AccountType.CURRENT_ACCOUNT,
+                DEFAULT_TOTAL, true);
+        User transferUser = new User(DEFAULT_ID, USER_01, currentAccountToTransferUser);
+
+        Account currentAccountToReceivingUser = new Account(1001L, AccountType.CURRENT_ACCOUNT, DEFAULT_TOTAL,
+                false);
+        User receivingUser = new User(2L, USER_02, currentAccountToReceivingUser);
+
+        assertThrows(BlockedAccountException.class, () -> this.accountService.transfer(STANDARD_ADDITION,
+                transferUser, receivingUser));
     }
 
 }
