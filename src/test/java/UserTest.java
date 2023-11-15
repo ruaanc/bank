@@ -1,21 +1,10 @@
-import org.account.Account;
-import org.account.AccountService;
-import org.account.AccountType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.user.User;
-
-import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 class UserTest {
 
-   private AccountService accountService;
+   private AccountService AccountService; 
 
    @BeforeEach
    void setUp() {
-        this.accountService = new AccountService();
+        this.AccountService = new AccountService(); 
    }
 
    @Test

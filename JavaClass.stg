@@ -1,12 +1,12 @@
 // JavaClass.stg
-classTemplate(className, message) ::= <<
-class <className> {
+classTemplate(testClassInformation, util) ::= <<
+class <testClassInformation.name> {
 
-   private AccountService accountService;
+   <testClassInformation.services: { service | private <service> <service>; }>
 
    @BeforeEach
    void setUp() {
-        this.accountService = new AccountService();
+        <testClassInformation.services: { service | this.<service> = new <service>(); }>
    }
 
    @Test
