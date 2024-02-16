@@ -3,17 +3,10 @@ package org.code_generator;
 import java.util.List;
 
 public class TestClassInformation {
-    private String name;
+    private Class<?> targetClass;
+    private String objectInstance;
     private List<String> services;
     private List<String> imports;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public List<String> getServices() {
         return services;
@@ -29,5 +22,21 @@ public class TestClassInformation {
 
     public void setImports(List<String> imports) {
         this.imports = imports;
+    }
+
+    public Class<?> getTargetClass() {
+        return targetClass;
+    }
+
+    public void setTargetClass(Class<?> targetClass) {
+        this.targetClass = targetClass;
+    }
+
+    public String getObjectInstance() {
+        return objectInstance;
+    }
+
+    public void setObjectInstance(String objectInstance) {
+        this.objectInstance = objectInstance;
     }
 }

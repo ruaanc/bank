@@ -16,10 +16,34 @@ class ${className} {
     }
 
     @Test
-    void shouldInstantiateUser() {
-        Account currentAccount = new Account(1000L, AccountType.CURRENT_ACCOUNT, new BigDecimal("1000.00"), false);
-        User user01 = new User(1L, "User01", currentAccount);
-        assertEquals(user01.getName(), "User01");
+    void shouldInstantiate${classTarget}() {
+        ${classTarget} ${lower_case_first_letter(classTarget)} = ${objectInstance};
+        assertNotEquals(null, ${lower_case_first_letter(classTarget)});
+    }
+
+    @Test
+    void methodShouldBeExecutedSuccessfully() {
+        AccountService mock = spy(AccountService.class);
+
+        mock.deposit(new User(1L, "User01", new Account(1000L, AccountType.CURRENT_ACCOUNT,
+        new BigDecimal("1000.00"), false)), new BigDecimal("500.00"));
+
+        verify(mock, times(1)).deposit(ArgumentCaptor.forClass(User.class).capture(),
+        ArgumentCaptor.forClass(BigDecimal.class).capture());
+
+        Method[] methods = mock.getClass().getMethods();
+
+        String methodName = "deposit";
+
+        Method method = Arrays.stream(methods)
+        .filter(m -> m.getName().equals(methodName))
+        .findFirst()
+        .orElseThrow(() -> new NoSuchMethodError(methodName));
+
+        List<String> parametersTypes = Arrays.stream(method.getParameters()).map(Parameter::getType).map(Class::getName).toList();
+
+        System.out.println(parametersTypes);
+
     }
 }
 
