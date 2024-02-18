@@ -21,6 +21,18 @@ class ${className} {
             </#list>
         );
     }
+
+    @Test
+    void method${test.testName}NotBeExecutedUnsuccessfully() {
+        ${simpleName} mock = spy(${simpleName}.class);
+
+        verify(mock, never()).${lower_case_first_letter(test.testName)}(
+        <#list test.parameters as parameter>
+            ArgumentCaptor.forClass(${parameter.type}.class).capture()<#if parameter_has_next>,</#if>
+        </#list>
+        );
+    }
+
     </#list>
 }
 

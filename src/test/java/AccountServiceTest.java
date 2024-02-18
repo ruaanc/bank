@@ -27,6 +27,18 @@ class AccountServiceTest {
             ArgumentCaptor.forClass(User.class).capture()
         );
     }
+
+    @Test
+    void methodTransferNotBeExecutedUnsuccessfully() {
+        AccountService mock = spy(AccountService.class);
+
+        verify(mock, never()).transfer(
+            ArgumentCaptor.forClass(BigDecimal.class).capture(),
+            ArgumentCaptor.forClass(User.class).capture(),
+            ArgumentCaptor.forClass(User.class).capture()
+        );
+    }
+
     @Test
     void methodCheckBalanceShouldBeExecutedSuccessfully() {
         AccountService mock = spy(AccountService.class);
@@ -39,6 +51,16 @@ class AccountServiceTest {
             ArgumentCaptor.forClass(User.class).capture()
         );
     }
+
+    @Test
+    void methodCheckBalanceNotBeExecutedUnsuccessfully() {
+        AccountService mock = spy(AccountService.class);
+
+        verify(mock, never()).checkBalance(
+            ArgumentCaptor.forClass(User.class).capture()
+        );
+    }
+
     @Test
     void methodDepositShouldBeExecutedSuccessfully() {
         AccountService mock = spy(AccountService.class);
@@ -53,5 +75,16 @@ class AccountServiceTest {
             ArgumentCaptor.forClass(BigDecimal.class).capture()
         );
     }
+
+    @Test
+    void methodDepositNotBeExecutedUnsuccessfully() {
+        AccountService mock = spy(AccountService.class);
+
+        verify(mock, never()).deposit(
+            ArgumentCaptor.forClass(User.class).capture(),
+            ArgumentCaptor.forClass(BigDecimal.class).capture()
+        );
+    }
+
 }
 
