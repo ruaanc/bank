@@ -4,7 +4,6 @@ import java.util.List;
 
 public class TestClassInformation {
     private Class<?> targetClass;
-    private String objectInstance;
     private List<String> services;
     private List<String> imports;
 
@@ -30,13 +29,5 @@ public class TestClassInformation {
 
     public void setTargetClass(Class<?> targetClass) {
         this.targetClass = targetClass;
-    }
-
-    public String getObjectInstance() {
-        return objectInstance;
-    }
-
-    public void setObjectInstance(String objectInstance) {
-        this.objectInstance = objectInstance;
     }
 }

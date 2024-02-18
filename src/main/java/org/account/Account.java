@@ -47,4 +47,10 @@ public class Account {
     public void setBlocked(boolean blocked) {
         this.blocked = blocked;
     }
+
+    @Override
+    public String toString() {
+        return String.format("new Account(Long.getLong(\"%s\"), %s, BigDecimal.valueOf(%s), %s)", getNumber().toString(),
+                getAccountType(), getTotal(), isBlocked());
+    }
 }

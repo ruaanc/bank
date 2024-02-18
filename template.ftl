@@ -9,12 +9,15 @@ class ${className} {
     void method${test.testName}ShouldBeExecutedSuccessfully() {
         ${simpleName} mock = spy(${simpleName}.class);
 
-        mock.${lower_case_first_letter(test.testName)}(new User(1L, "User01", new Account(1000L, AccountType.CURRENT_ACCOUNT,
-        new BigDecimal("1000.00"), false)), new BigDecimal("500.00"));
+        mock.${lower_case_first_letter(test.testName)}(
+            <#list test.parameters as parameter>
+            ${parameter.defaultValue}<#if parameter_has_next>,</#if>
+            </#list>
+        );
 
-        verify(mock, times(1)).deposit(
-            <#list test.parametersType as parameter>
-            ArgumentCaptor.forClass(${parameter}.class).capture()<#if parameter_has_next>,</#if>
+        verify(mock, times(1)).${lower_case_first_letter(test.testName)}(
+            <#list test.parameters as parameter>
+            ArgumentCaptor.forClass(${parameter.type}.class).capture()<#if parameter_has_next>,</#if>
             </#list>
         );
     }

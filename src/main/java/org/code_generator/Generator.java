@@ -4,21 +4,21 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import org.account.AccountService;
+import org.utils.ReflectUtil;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static org.utils.Constants.*;
 
 public class Generator {
 
     public void toGenerate() {
         try {
-            String fileName = "example1.ftl";
+            String fileName = "template.ftl";
             File file = new File(fileName);
             String filePath = file.getAbsolutePath();
             Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
@@ -33,15 +33,14 @@ public class Generator {
                     "org.account.Account",
                     "org.account.AccountService",
                     "org.account.AccountType",
-                    "org.junit.jupiter.api.BeforeEach",
                     "org.junit.jupiter.api.Test",
+                    "org.mockito.ArgumentCaptor",
                     "org.user.User",
                     "java.math.BigDecimal",
-                    "static org.junit.jupiter.api.Assertions.assertNotEquals"
+                    "static org.mockito.Mockito.*"
             ));
             testClassInformation.setServices(List.of("AccountService"));
             testClassInformation.setTargetClass(AccountService.class);
-            testClassInformation.setObjectInstance("new User(1L, \"User01\", new Account(1000L, AccountType.CURRENT_ACCOUNT, new BigDecimal(\"1000.00\"), false))");
 
             Class<?> targetClass = testClassInformation.getTargetClass();
 
@@ -51,11 +50,19 @@ public class Generator {
                         TestMethodInformation testMethodInformation = new TestMethodInformation();
                         testMethodInformation.setTestName(method.getName().substring(0, 1).toUpperCase()
                                 + method.getName().substring(1));
-                        testMethodInformation.setParametersType(Arrays.stream(method.getParameterTypes()).map(
-                                aClass -> aClass.getName().substring(aClass.getName().lastIndexOf(".") + 1))
-                                .toList());
+                        List<Map<String, Object>> parameters = Arrays.stream(method.getParameters()).map(parameter -> {
+                            Map<String, Object> param = new HashMap<>();
+                            param.put("name", parameter.getName());
+                            param.put("type", parameter.getType().getSimpleName());
+                            param.put("defaultValue", ReflectUtil.getElementByTypeInList(DEFAULT_VALUE_TO_TEST,
+                                    parameter.getType().getName()));
+                            return param;
+                        }).toList();
+                        testMethodInformation.setParameters(parameters);
                         return testMethodInformation;
-                    }).filter(testMethodInformation -> !testMethodInformation.getParametersType().isEmpty()).toList();
+                    }).filter(testMethodInformation -> Objects.nonNull(testMethodInformation.getParameters())
+                    && !testMethodInformation.getParameters().isEmpty() && !OUT_SCOPE_METHODS.contains(
+                            testMethodInformation.getTestName().toLowerCase())).toList();
 
             String classTestName = targetClass.getSimpleName() + "Test";
 

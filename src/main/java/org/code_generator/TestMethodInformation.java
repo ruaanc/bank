@@ -1,11 +1,12 @@
 package org.code_generator;
 
 import java.util.List;
+import java.util.Map;
 
 public class TestMethodInformation {
 
     private String testName;
-    private List<String> parametersType;
+    private List<Map<String, Object>> parameters;
 
     public String getTestName() {
         return testName;
@@ -15,11 +16,11 @@ public class TestMethodInformation {
         this.testName = testName;
     }
 
-    public List<String> getParametersType() {
-        return parametersType;
+    public List<Map<String, Object>> getParameters() {
+        return parameters;
     }
 
-    public void setParametersType(List<String> parametersType) {
-        this.parametersType = parametersType;
+    public void setParameters(List<Map<String, Object>> parameters) {
+        this.parameters = parameters;
     }
 }

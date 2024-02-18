@@ -37,4 +37,9 @@ public class User {
     public void setAccount(Account account) {
         this.account = account;
     }
+
+    @Override
+    public String toString() {
+        return String.format("new User(Long.getLong(\"%s\"), \"%s\", %s)", this.id.toString(), this.name, this.account);
+    }
 }
