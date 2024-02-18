@@ -1,12 +1,10 @@
 import org.account.Account;
 import org.account.AccountService;
+import org.account.AccountType;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.user.User;
-
 import java.math.BigDecimal;
-
-import static org.account.AccountType.CURRENT_ACCOUNT;
 import static org.mockito.Mockito.*;
 
 class AccountServiceTest {
@@ -16,7 +14,7 @@ class AccountServiceTest {
         AccountService mock = spy(AccountService.class);
 
         mock.transfer(
-                BigDecimal.valueOf(500),
+            500,
             new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false)),
             new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false))
         );
@@ -37,6 +35,18 @@ class AccountServiceTest {
             ArgumentCaptor.forClass(User.class).capture(),
             ArgumentCaptor.forClass(User.class).capture()
         );
+    }
+    @Test
+    void methodTransferShouldReturnExpectedResult() {
+        AccountService mock = spy(AccountService.class);
+
+        BigDecimal response = mock.transfer(
+            500,
+            new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false)),
+            new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false))
+        );
+
+        Assertions.assertEquals(new ExpectedResult("transfer", 500).getResult(), response);
     }
 
     @Test
@@ -60,14 +70,13 @@ class AccountServiceTest {
             ArgumentCaptor.forClass(User.class).capture()
         );
     }
-
     @Test
     void methodDepositShouldBeExecutedSuccessfully() {
         AccountService mock = spy(AccountService.class);
 
         mock.deposit(
             new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false)),
-                BigDecimal.valueOf(500)
+            500
         );
 
         verify(mock, times(1)).deposit(

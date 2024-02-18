@@ -32,8 +32,23 @@ class ${className} {
         </#list>
         );
     }
+    <#if test.expectedResult.isPresent()>
+    @Test
+    void method${test.testName}ShouldReturnExpectedResult() {
+        ${simpleName} mock = spy(${simpleName}.class);
 
+        BigDecimal response = mock.${lower_case_first_letter(test.testName)}(
+        <#list test.parameters as parameter>
+            ${parameter.defaultValue}<#if parameter_has_next>,</#if>
+        </#list>
+        );
+
+        Assertions.assertEquals(${test.expectedResult.get()}.getResult(), response);
+    }
+
+        </#if>
     </#list>
+
 }
 
 <#function lower_case_first_letter str>

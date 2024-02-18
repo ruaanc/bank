@@ -59,6 +59,7 @@ public class Generator {
                             return param;
                         }).toList();
                         testMethodInformation.setParameters(parameters);
+                        testMethodInformation.setExpectedResult(getExpectedResult(method.getName()));
                         return testMethodInformation;
                     }).filter(testMethodInformation -> Objects.nonNull(testMethodInformation.getParameters())
                     && !testMethodInformation.getParameters().isEmpty() && !OUT_SCOPE_METHODS.contains(
@@ -77,6 +78,11 @@ public class Generator {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Optional<ExpectedResult> getExpectedResult(String methodName) {
+        return EXPECTED_RESULTS.stream().filter(expectedResult -> expectedResult.getMethodName().equals(methodName))
+                .findFirst();
     }
 
 }
