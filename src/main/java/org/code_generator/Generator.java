@@ -60,6 +60,7 @@ public class Generator {
                         }).toList();
                         testMethodInformation.setParameters(parameters);
                         testMethodInformation.setExpectedResult(getExpectedResult(method.getName()));
+                        testMethodInformation.setReturnType(method.getReturnType().getSimpleName());
                         return testMethodInformation;
                     }).filter(testMethodInformation -> Objects.nonNull(testMethodInformation.getParameters())
                     && !testMethodInformation.getParameters().isEmpty() && !OUT_SCOPE_METHODS.contains(

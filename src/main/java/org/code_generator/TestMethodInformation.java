@@ -9,6 +9,7 @@ public class TestMethodInformation {
     private String testName;
     private List<Map<String, Object>> parameters;
     private Optional<ExpectedResult> expectedResult;
+    private String returnType;
 
     public String getTestName() {
         return testName;
@@ -32,5 +33,13 @@ public class TestMethodInformation {
 
     public void setExpectedResult(Optional<ExpectedResult> expectedResult) {
         this.expectedResult = expectedResult;
+    }
+
+    public String getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(String returnType) {
+        this.returnType = returnType;
     }
 }

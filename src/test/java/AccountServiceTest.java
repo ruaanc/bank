@@ -1,10 +1,14 @@
 import org.account.Account;
 import org.account.AccountService;
 import org.account.AccountType;
+import org.code_generator.ExpectedResult;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.user.User;
 import java.math.BigDecimal;
+
+import static org.account.AccountType.CURRENT_ACCOUNT;
 import static org.mockito.Mockito.*;
 
 class AccountServiceTest {
@@ -14,7 +18,7 @@ class AccountServiceTest {
         AccountService mock = spy(AccountService.class);
 
         mock.transfer(
-            500,
+                BigDecimal.valueOf(500),
             new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false)),
             new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false))
         );
@@ -41,12 +45,48 @@ class AccountServiceTest {
         AccountService mock = spy(AccountService.class);
 
         BigDecimal response = mock.transfer(
-            500,
+                BigDecimal.valueOf(500),
             new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false)),
             new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false))
         );
 
-        Assertions.assertEquals(new ExpectedResult("transfer", 500).getResult(), response);
+        Assertions.assertEquals(new ExpectedResult("transfer", BigDecimal.valueOf(500.0)).getResult(), response);
+    }
+
+    @Test
+    void methodDepositShouldBeExecutedSuccessfully() {
+        AccountService mock = spy(AccountService.class);
+
+        mock.deposit(
+            new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false)),
+                BigDecimal.valueOf(500)
+        );
+
+        verify(mock, times(1)).deposit(
+            ArgumentCaptor.forClass(User.class).capture(),
+            ArgumentCaptor.forClass(BigDecimal.class).capture()
+        );
+    }
+
+    @Test
+    void methodDepositNotBeExecutedUnsuccessfully() {
+        AccountService mock = spy(AccountService.class);
+
+        verify(mock, never()).deposit(
+            ArgumentCaptor.forClass(User.class).capture(),
+            ArgumentCaptor.forClass(BigDecimal.class).capture()
+        );
+    }
+    @Test
+    void methodDepositShouldReturnExpectedResult() {
+        AccountService mock = spy(AccountService.class);
+
+        BigDecimal response = mock.deposit(
+            new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false)),
+                BigDecimal.valueOf(500)
+        );
+
+        Assertions.assertEquals(new ExpectedResult("deposit", BigDecimal.valueOf(1500.0)).getResult(), response);
     }
 
     @Test
@@ -71,29 +111,16 @@ class AccountServiceTest {
         );
     }
     @Test
-    void methodDepositShouldBeExecutedSuccessfully() {
+    void methodCheckBalanceShouldReturnExpectedResult() {
         AccountService mock = spy(AccountService.class);
 
-        mock.deposit(
-            new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false)),
-            500
+        BigDecimal response = mock.checkBalance(
+            new User(Long.getLong("1"), "User01", new Account(Long.getLong("1000"), CURRENT_ACCOUNT, BigDecimal.valueOf(1000.00), false))
         );
 
-        verify(mock, times(1)).deposit(
-            ArgumentCaptor.forClass(User.class).capture(),
-            ArgumentCaptor.forClass(BigDecimal.class).capture()
-        );
+        Assertions.assertEquals(new ExpectedResult("checkBalance", BigDecimal.valueOf(1000.0)).getResult(), response);
     }
 
-    @Test
-    void methodDepositNotBeExecutedUnsuccessfully() {
-        AccountService mock = spy(AccountService.class);
-
-        verify(mock, never()).deposit(
-            ArgumentCaptor.forClass(User.class).capture(),
-            ArgumentCaptor.forClass(BigDecimal.class).capture()
-        );
-    }
 
 }
 
